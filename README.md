@@ -19,24 +19,33 @@
 ```python
 from sklearn.datasets import load_iris
 import pandas as pd
+// iris 데이터셋 패키지와 판다스 패키지를 가져온다.
 
 iris = load_iris()
+// iris 데이터 안에 iris 데이터를 넣는다.
 
 df = pd.DataFrame(iris['data'], columns=iris['feature_names'])
 df['target'] = iris['target']
+// 판다스 데이터 프레임을 사용하여 데이터 셋 로드를 한다.
+
 df.head()
+// 상위 5개 폴거를 뽑아온다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/7c81d6c1-0d08-4a31-a3b0-f05b80bcd3ac)
 ### PCA 수행
 ```python
 from sklearn.decomposition import PCA
+// PCA 패키지를 가져온다.
 
 pca = PCA(n_components=2)
+// 특징을 2개로 만들 수 있는 PCA를 생성한다.
 
 data = pca.fit_transform(df.drop(columns=['target']))
+// 데이터를 특징 2개로 만들고 비지도 학습이기 때문에 타겟 값을 삭제 시킨다.
 
 data[:5]
+// 0~4번째 데이터를 불러온다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/1b356d7a-cbba-44c5-bfa3-18a26a8a9061)
@@ -44,9 +53,14 @@ data[:5]
 ```python
 import matplotlib.pyplot as plt
 import seaborn as sns
+// seaborn 패키지와 matplotlib 패키지를 가져온다.
 
 plt.figure(figsize=(16, 8))
+// 가로 16 세로 8 사이즈 차트를 만든다.
+
 sns.scatterplot(x=data[:, 0], y=data[:, 1], hue=df['target'])
+// 특징 2개로 정리한 산점도 차트를 그린다.
+
 plt.show()
 ```
 
@@ -55,11 +69,14 @@ plt.show()
 ### 데이터셋 분할
 ```python
 from sklearn.model_selection import train_test_split
+// train_test_split 패키지를 가져온다.
 
 x_train, x_val, y_train, y_val = train_test_split(data, df[['target']], test_size=0.2, random_state=2021)
+// 검증 데이터와 훈련 데이터로 분할 한다.
 
 print(x_train.shape, y_train.shape)
 print(x_val.shape, y_val.shape)
+// 훈련데이터와 검증데이터가 무슨 형태로 들어가 있는지 확인한다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/46b528a7-2ed7-4107-a618-52996446b933)
@@ -67,15 +84,21 @@ print(x_val.shape, y_val.shape)
 ```python
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
+// SVC 모델과 accuracy_score 패키지를 가져온다.
 
 model = SVC()
+// SVC 모델을 정의한다.
 
 model.fit(x_train, y_train['target'])
+// 모델을 훈련시킨다.
 
 y_pred = model.predict(x_val)
+// 정답값을 예측한다.
 
 accuracy_score(y_val, y_pred) * 100
+// 예측한 값을 정답 값과 비교하여 정확도를 확인한다.
 ```
+feature가 많을 수록 정확도가 오르지만 PCA를 통해서 feature 값을 2로 낮췄기 때문에 예전 데이터보다 1% 정도 정확도가 떨어졌다.(기능은 빠름) 
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/c5bef46e-6f3d-454a-ab24-c028d52ebbab)
 ## MNIST 데이터셋을 사용한 PCA
@@ -85,44 +108,58 @@ accuracy_score(y_val, y_pred) * 100
 ### MNIST 데이터셋 로드
 ```python
 from sklearn.datasets import load_digits
+// load_digits 데이터 셋 패키지를 가져온다.
 
 digits = load_digits()
+// digits 데이터에 load_digits 데이터를 넣는다.
 
 data = digits['data']
 target = digits['target']
+// 데이터는 digits 데이터로 정의하고 target은 digits target으로 정의한다.
 ```
 ### 정규화
 ```python
 from sklearn.preprocessing import MinMaxScaler
+// MinMaxScaler 정규화 패키지를 가져온다.
 
 scaler = MinMaxScaler()
+// scaler 데이터에 MinMaxScaler 객체를 생성한다.
 
 scaled = scaler.fit_transform(data)
+// scaled 데이터 안에 정규화시킨 데이터 값을 넣는다.
 
 scaled[0]
+// 0번째 데이터를 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/ae125928-90c4-42dd-a98f-e2eca004c1e3)
 ### PCA 수행
 ```python
 from sklearn.decomposition import PCA
+// PCA 패키지를 가져온다.
 
 pca = PCA(n_components=10)
+// 특징을 10개를 만들 수 있는 PCA를 생성한다.
 
 data_pca = pca.fit_transform(scaled)
+// data_pca에 특징을 10개로 변환시킨 scaled 데이터를 넣는다.
 
 data_pca[0]
+// 0번째 데이터를 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/a58aec81-db92-4778-b45b-a62852d4c215)
 ### 데이터셋 분할
 ```python
 from sklearn.model_selection import train_test_split
+// train_test_split 패키지를 가져온다.
 
 x_train, x_val, y_train, y_val = train_test_split(data_pca, target, test_size=0.2, random_state=2021)
+// 검증 데이터와 훈련 데이터로 분할한다.
 
 print(x_train.shape, y_train.shape)
 print(x_val.shape, y_val.shape)
+// 검증 데이터와 훈련 데이터의 형태를 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/b4cda88c-a315-493f-b0ec-85741c7f95cf)
@@ -131,15 +168,21 @@ print(x_val.shape, y_val.shape)
 ```python
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
+// SVC 모델과 accuracy_score 패키지를 가져온다.
 
 model = SVC()
+// 모델 정의
 
 model.fit(x_train, y_train)
+// 모델 훈련
 
 y_pred = model.predict(x_val)
+// 정답값예측
 
 accuracy_score(y_val, y_pred) * 100
+// 정답 값과 예측 값을 비교하여 정확도를 확인한다.
 ```
+이 예제도 1.2% 정도 정확도가 낮아진 것을 볼 수 있다.
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/e54a6941-1cc9-43ff-bb71-d9d608e3731d)
 
@@ -160,21 +203,29 @@ from sklearn.datasets import load_digits
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 import plotly.express as px
+// load_digits 데이터 셋과 정규화 패키지, PCA 패키지, plotly.express 패키지를 가져온다.
 
 digits = load_digits()
+// 데이터를 넣어준다.
 
 data = digits['data']
 target = digits['target']
+// 데이터 셋 시켜준다.
 
 scaler = MinMaxScaler()
+// 데이터 정규화 패키지 생성.
 
 scaled = scaler.fit_transform(data)
+// 데이터를 정규화시켜 넣는다.
 
 pca = PCA(n_components=3)
+// 특징 3개로 만들 수 있는 PCA를 넣는다.
 
 data_pca = pca.fit_transform(scaled)
+// 특징을 3개로 변환 시켜 데이터를 넣는다.
 
 fig = px.scatter_3d(x=data_pca[:, 0], y=data_pca[:, 1], z=data_pca[:, 2], color=target, opacity=0.7)
+// plotly.express 패키지를 통해 3차원 산점도 차트를 그린다.
 fig.show()
 ```
 
@@ -196,6 +247,8 @@ fig.show()
 
 3차원에서 거리를 구하는 방법
 
+(x1,y1,z1)-(x2,y2,z2) 제곱의 루트를 씌어주면 된다.
+
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/c48e757a-6b8c-4088-90b8-1fe61cbd2dbd)
 
 머신러닝이란 Big 데이터를 n차원 공간에 한 점으로 표시하는 것
@@ -206,7 +259,7 @@ fig.show()
 - 원하는 갯수 (K)로 군집화
 - 연산 속도가 빠른 편
 
-다양한 군집화 알고리즘 살펴보기
+다양한 군집화 알고리즘 살펴보기(가로 군집화 알고리즘)
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/3f3db8e1-b199-4ae9-9397-6cb8be3aecc0)
 ## Iris 데이터셋을 이용한 실습
@@ -216,46 +269,58 @@ target은 빼고 우리가 정답을 모른다고 가정한다.
 ```python
 from sklearn.datasets import load_iris
 import pandas as pd
+// iris 데이터 셋 패키지와 판다스 패키지를 가져온다
 
 iris = load_iris()
+// 데이터를 넣는다.
 
 df = pd.DataFrame(iris['data'], columns=iris['feature_names'])
+// 데이터 셋을 한다.(타겟값 안넣음)
+
 df.head()
+// 상위 5개 데이터 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/a8080cd9-3ac5-4de1-abc1-a1ee4b18cf16)
 
-![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/36b9c32f-bbe7-4a9d-8286-23f41048fcdc)
-
-![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/f4b5392b-c8ec-47c2-98b6-59ed6a857431)
-
 ```python
 iris['target']
+// iris 타겟 값이 저장되어 있는것을 보여준다. 
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/02c9acf8-c24e-4178-990c-b446448a85a2)
 ### PCA
 왜 PCA를 하는 것일까?
+
+나중에 군집화 그래프를 만들기 위해서
 ```python
 from sklearn.decomposition import PCA
+// PCA 패키지를 가져온다.
 
 pca = PCA(n_components=2)
+// 특징을 2개로 만들 수 있는 PCA를 생성
 
 data = pca.fit_transform(df)
+// 특징을 2개로 변환시켜 넣는다.
 
 data[:5]
+// 0~4번째 데이터를 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/14809d8f-d4fd-453d-828e-f260538320a6)
 ### 모델 정의, 학습
 ```python
 from sklearn.cluster import KMeans
+// KMeans 모델을 가져온다.
 
-model = KMeans(n_clusters=3)
+model = KMeans(n_clusters=3 [k와 동일])
+// 3개의 군집으로 나누는 KMeans 모델을 정의한다.
 
 model.fit(data)
+// 모델 훈련
 
 model.labels_
+// 분류된 데이터가 어떤 라벨을 가지고 있는지 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/42a3505a-e32c-41bc-b022-6c9a2b6765cf)
@@ -263,8 +328,10 @@ model.labels_
 ```python
 import matplotlib.pyplot as plt
 import seaborn as sns
+// matplotlib 패키지와 seaborn 패키지를 가져온다.
 
 colors = ['red', 'green', 'blue']
+// 빨강 초록 파랑 색을 사용하여 구분한다.
 
 plt.figure(figsize=(16, 10))
 sns.scatterplot(
@@ -274,6 +341,8 @@ sns.scatterplot(
     palette=colors,
     alpha=0.5,
 )
+// pca 결과를 라벨별로 색으로 그린다.
+
 sns.scatterplot(
     x=model.cluster_centers_[:, 0],
     y=model.cluster_centers_[:, 1],
@@ -282,10 +351,13 @@ sns.scatterplot(
     s=300,
     legend=False
 )
+// 군집의 중심점에 300 사이즈 색깔 점을 찍는다.
 plt.show()
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/5c758247-a6ec-4b45-84b0-59143c0fd1dc)
+
+정답값 차트와 비교
 
 ```python
 import matplotlib.pyplot as plt
@@ -298,6 +370,9 @@ plt.show()
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/77b2d1e2-62b9-4eb0-b1f3-f8818766a842)
 
+꽤 군집화가 잘되었다. (중심점의 거리가 가까우면 구분이 어렵다.)
+
+정확도를 올리고 싶으면 feature의 갯수를 늘리거나 pca를 쓰지 말아야된다.
 ## 군집화 평가 지표
 실루엣 점수 Silhouette Score
 
@@ -317,29 +392,38 @@ plt.show()
 
 ```python
 from sklearn.metrics import silhouette_score
+// silhouette_score 패키지를 가져온다.
 
 silhouette_score(data, model.labels_)
+// 군집화의 결과를 평가해준다. (정답값을 넣지않는다)
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/dcd793ba-344b-468b-b8e3-177863a94a09)
 
+군집화가 어느정도 잘 된걸 볼 수 있다.
 ## MNIST에서 K-Means 실습
 ### 데이터셋 로드
 ```python
 from sklearn.datasets import load_digits
+// load_digits 데이터셋 패키지를 가져온다.
 
 digits = load_digits()
+// 데이터를 넣는다.
 
 data = digits['data']
 target = digits['target']
+// 데이터셋을 한다.
 ```
 ### 정규화
 ```python
 from sklearn.preprocessing import MinMaxScaler
+// 정규화 패키지를 가져온다.
 
 scaler = MinMaxScaler()
+// 정규화를 할 수 있는 객체를 생성한다.
 
 scaled = scaler.fit_transform(data)
+// 정규화를 시켜준 데이터를 넣어준다.
 
 scaled[0]
 ```
@@ -349,10 +433,13 @@ scaled[0]
 ### PCA 수행
 ```python
 from sklearn.decomposition import PCA
+// pca 패키지를 가져온다.
 
 pca = PCA(n_components=10)
+// 특징 10개를 만들 수 있는 pca를 생성한다.
 
 data_pca = pca.fit_transform(scaled)
+// 특징을 10개로 변환시킨 데이터를 넣는다.
 
 data_pca[0]
 ```
@@ -362,20 +449,26 @@ data_pca[0]
 ### 모델 정의, 학습
 ```python
 from sklearn.cluster import KMeans
+// KMeans 모델을 가져온다.
 
 model = KMeans(n_clusters=10)
+// 10개의 군집으로 나누는 KMeans 모델을 정의한다.
 
 model.fit(data_pca)
+// 모델 훈련
 
 model.labels_
+// 분류된 데이터가 어떤 라벨을 가지고 있는지 보여준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/05005543-709c-4130-a5b9-8aa0c981b837)
 ### 실루엣 검증
 ```python
 from sklearn.metrics import silhouette_score
+// silhouette_score 패키지를 가져온다.
 
 silhouette_score(data_pca, model.labels_)
+// 군집화의 결과를 평가해준다.
 ```
 
 ![image](https://github.com/hsy0511/bbang-hyung-5/assets/104752580/0379224d-427f-470c-8d28-6e82d44ef972)
